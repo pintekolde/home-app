@@ -68,13 +68,19 @@
 
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/home-app/service-worker.js')
+          navigator.serviceWorker.register('/service-worker.js')
             .then(registration => {
               console.log('ServiceWorker registration successful with scope:', registration.scope);
+              if (registration.active) {
+                console.log('Service Worker is active');
+              }
+              registration.addEventListener('activate', () => {
+                console.log('Service Worker activated');
+              });
             })
             .catch(err => {
               console.error('ServiceWorker registration failed:', err);
-              showError('Failed to register service worker');
+              showError('Failed to register service worker: ' + err.message);
             });
         });
       } else {

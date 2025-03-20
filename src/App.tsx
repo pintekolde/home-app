@@ -137,6 +137,14 @@ const App: React.FC = () => {
         if ('serviceWorker' in navigator) {
           const registration = await navigator.serviceWorker.ready;
           console.log('Service Worker is ready:', registration);
+          
+          // Проверяем состояние Service Worker
+          if (registration.active) {
+            console.log('Service Worker is active');
+          }
+          if (registration.waiting) {
+            console.log('Service Worker is waiting');
+          }
         }
 
         // Проверяем поддержку необходимых API
@@ -144,13 +152,23 @@ const App: React.FC = () => {
           throw new Error('Local storage is not supported');
         }
 
+        // Проверяем поддержку роутинга
+        if (!window.location.hash) {
+          window.location.hash = '#/';
+        }
+
         // Загружаем сохраненные настройки
         const savedSettings = localStorage.getItem('appSettings');
         if (savedSettings) {
-          const settings = JSON.parse(savedSettings);
-          setDarkMode(settings.darkMode || false);
-          setTextSize(settings.textSize || 100);
-          setUserProfile(settings.userProfile || userProfile);
+          try {
+            const settings = JSON.parse(savedSettings);
+            setDarkMode(settings.darkMode || false);
+            setTextSize(settings.textSize || 100);
+            setUserProfile(settings.userProfile || userProfile);
+          } catch (parseError) {
+            console.error('Failed to parse saved settings:', parseError);
+            localStorage.removeItem('appSettings');
+          }
         }
 
         setIsInitialized(true);
