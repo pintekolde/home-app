@@ -2,14 +2,14 @@ const CACHE_NAME = 'home-app-v1';
 const urlsToCache = [
   '/home-app/',
   '/home-app/index.html',
-  '/home-app/static/js/main.bf1fe366.js',
+  '/home-app/static/js/main.6f042eba.js',
   '/home-app/static/css/main.css',
   '/home-app/manifest.json',
   '/home-app/logo192.png',
   '/home-app/logo512.png',
   '/home-app/favicon.ico',
-  '/home-app/static/js/main.bf1fe366.js.map',
-  '/home-app/static/js/main.bf1fe366.js.LICENSE.txt'
+  '/home-app/static/js/main.6f042eba.js.map',
+  '/home-app/static/js/main.6f042eba.js.LICENSE.txt'
 ];
 
 self.addEventListener('install', event => {
@@ -37,6 +37,10 @@ self.addEventListener('fetch', event => {
                 cache.put(event.request, responseToCache);
               });
             return response;
+          })
+          .catch(error => {
+            console.error('Fetch failed:', error);
+            return new Response('Network error', { status: 503 });
           });
       })
   );

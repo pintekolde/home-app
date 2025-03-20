@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
@@ -94,6 +94,8 @@ const DeviceCard: React.FC<DeviceCardProps> = ({ title, icon, isOn, onToggle }) 
 );
 
 const App: React.FC = () => {
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [darkMode, setDarkMode] = useState(false);
   const [textSize, setTextSize] = useState(100);
   const [userProfile, setUserProfile] = useState<UserProfile>({
@@ -129,13 +131,82 @@ const App: React.FC = () => {
   });
 
   useEffect(() => {
-    // Проверяем поддержку Service Worker
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.ready.then(registration => {
-        console.log('Service Worker is ready:', registration);
-      });
-    }
+    const initializeApp = async () => {
+      try {
+        // Проверяем поддержку Service Worker
+        if ('serviceWorker' in navigator) {
+          const registration = await navigator.serviceWorker.ready;
+          console.log('Service Worker is ready:', registration);
+        }
+
+        // Проверяем поддержку необходимых API
+        if (!('localStorage' in window)) {
+          throw new Error('Local storage is not supported');
+        }
+
+        // Загружаем сохраненные настройки
+        const savedSettings = localStorage.getItem('appSettings');
+        if (savedSettings) {
+          const settings = JSON.parse(savedSettings);
+          setDarkMode(settings.darkMode || false);
+          setTextSize(settings.textSize || 100);
+          setUserProfile(settings.userProfile || userProfile);
+        }
+
+        setIsInitialized(true);
+      } catch (err) {
+        console.error('Initialization error:', err);
+        setError(err instanceof Error ? err.message : 'Failed to initialize app');
+      }
+    };
+
+    initializeApp();
   }, []);
+
+  // Сохраняем настройки при изменении
+  useEffect(() => {
+    if (isInitialized) {
+      try {
+        localStorage.setItem('appSettings', JSON.stringify({
+          darkMode,
+          textSize,
+          userProfile,
+        }));
+      } catch (err) {
+        console.error('Failed to save settings:', err);
+      }
+    }
+  }, [isInitialized, darkMode, textSize, userProfile]);
+
+  if (error) {
+    return (
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        minHeight: '100vh',
+        p: 2,
+        textAlign: 'center'
+      }}>
+        <Typography color="error">
+          {error}
+        </Typography>
+      </Box>
+    );
+  }
+
+  if (!isInitialized) {
+    return (
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        minHeight: '100vh'
+      }}>
+        <Typography>Loading...</Typography>
+      </Box>
+    );
+  }
 
   const handleToggleDevice = (device: keyof typeof devices) => {
     setDevices(prev => ({
