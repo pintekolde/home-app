@@ -8,6 +8,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Home APP" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="Home APP" />
     <meta
       name="description"
       content="Home App - Smart Home Control Panel"
@@ -35,6 +37,14 @@
             });
         });
       }
+    </script>
+    <script>
+      window.addEventListener('online', function() {
+        document.body.classList.remove('offline');
+      });
+      window.addEventListener('offline', function() {
+        document.body.classList.add('offline');
+      });
     </script>
   </body>
 </html> 
