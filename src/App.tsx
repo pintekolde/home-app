@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { HashRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
@@ -128,6 +128,15 @@ const App: React.FC = () => {
     energyUsage: 75,
   });
 
+  useEffect(() => {
+    // Проверяем поддержку Service Worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.ready.then(registration => {
+        console.log('Service Worker is ready:', registration);
+      });
+    }
+  }, []);
+
   const handleToggleDevice = (device: keyof typeof devices) => {
     setDevices(prev => ({
       ...prev,
@@ -234,6 +243,7 @@ const App: React.FC = () => {
                 />
               }
             />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
           <BottomNavigation />
         </Box>
