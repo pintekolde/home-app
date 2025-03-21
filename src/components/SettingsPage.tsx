@@ -11,10 +11,11 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { UserProfile } from '../types';
+import { alpha } from '@mui/material/styles';
 
 const SettingsContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
-  '@media (max-width:600px)': {
+  [theme.breakpoints.down('sm')]: {
     padding: theme.spacing(1.5),
   },
 }));
@@ -22,8 +23,42 @@ const SettingsContainer = styled(Box)(({ theme }) => ({
 const SettingsSection = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(2),
   marginBottom: theme.spacing(2),
-  '@media (max-width:600px)': {
+  [theme.breakpoints.down('sm')]: {
     padding: theme.spacing(1.5),
+  },
+}));
+
+const StyledSlider = styled(Slider)(({ theme }) => ({
+  '& .MuiSlider-thumb': {
+    height: 20,
+    width: 20,
+    backgroundColor: theme.palette.primary.main,
+    '&:hover, &.Mui-focusVisible': {
+      boxShadow: `0px 0px 0px 8px ${alpha(theme.palette.primary.main, 0.16)}`,
+    },
+  },
+  '& .MuiSlider-track': {
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: theme.palette.primary.main,
+  },
+  '& .MuiSlider-rail': {
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: theme.palette.mode === 'dark' 
+      ? alpha(theme.palette.primary.main, 0.3)
+      : alpha(theme.palette.primary.main, 0.2),
+  },
+  '& .MuiSlider-mark': {
+    backgroundColor: theme.palette.text.secondary,
+    height: 8,
+    width: 2,
+    '&.MuiSlider-markActive': {
+      backgroundColor: theme.palette.primary.main,
+    },
+  },
+  '& .MuiSlider-valueLabel': {
+    backgroundColor: theme.palette.primary.main,
   },
 }));
 
@@ -45,7 +80,22 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
   onTextSizeChange,
 }) => {
   const handleTextSizeChange = (_: Event, value: number | number[]) => {
-    onTextSizeChange(value as number);
+    if (typeof value === 'number') {
+      onTextSizeChange(value);
+    }
+  };
+
+  const handleDarkModeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    onDarkModeChange(event.target.checked);
+  };
+
+  const handleProfileChange = (field: keyof UserProfile) => (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    onProfileChange({
+      ...userProfile,
+      [field]: event.target.value,
+    });
   };
 
   return (
@@ -69,15 +119,17 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
               fullWidth
               label="Имя"
               value={userProfile.name}
-              onChange={(e) => onProfileChange({ ...userProfile, name: e.target.value })}
+              onChange={handleProfileChange('name')}
               margin="dense"
+              variant="outlined"
             />
             <TextField
               fullWidth
               label="Email"
               value={userProfile.email}
-              onChange={(e) => onProfileChange({ ...userProfile, email: e.target.value })}
+              onChange={handleProfileChange('email')}
               margin="dense"
+              variant="outlined"
             />
           </Box>
         </Box>
@@ -91,15 +143,17 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
           control={
             <Switch
               checked={darkMode}
-              onChange={(e) => onDarkModeChange(e.target.checked)}
+              onChange={handleDarkModeChange}
               color="primary"
             />
           }
           label="Темная тема"
         />
         <Box sx={{ mt: 2 }}>
-          <Typography gutterBottom>Размер текста ({textSize}%)</Typography>
-          <Slider
+          <Typography gutterBottom>
+            Размер текста ({textSize}%)
+          </Typography>
+          <StyledSlider
             value={textSize}
             onChange={handleTextSizeChange}
             min={75}
@@ -111,16 +165,6 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
               { value: 150, label: '150%' },
             ]}
             valueLabelDisplay="auto"
-            sx={{
-              '& .MuiSlider-thumb': {
-                height: 20,
-                width: 20,
-              },
-              '& .MuiSlider-track': {
-                height: 6,
-                borderRadius: 3,
-              },
-            }}
           />
         </Box>
       </SettingsSection>

@@ -62,13 +62,53 @@ const DeviceCard: React.FC<DeviceCardProps> = ({ title, icon, isOn, onToggle }) 
 const App: React.FC = () => {
   const [isInitialized, setIsInitialized] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [darkMode, setDarkMode] = useState(false);
-  const [textSize, setTextSize] = useState(100);
-  const [userProfile, setUserProfile] = useState<UserProfile>({
-    name: 'Иван Иванов',
-    email: 'ivan@example.com',
-    avatar: 'https://via.placeholder.com/150',
+  const [darkMode, setDarkMode] = useState(() => {
+    try {
+      const savedSettings = localStorage.getItem('appSettings');
+      if (savedSettings) {
+        const settings = JSON.parse(savedSettings);
+        return settings.darkMode || false;
+      }
+    } catch (error) {
+      console.error('Error loading dark mode setting:', error);
+    }
+    return false;
   });
+  
+  const [textSize, setTextSize] = useState(() => {
+    try {
+      const savedSettings = localStorage.getItem('appSettings');
+      if (savedSettings) {
+        const settings = JSON.parse(savedSettings);
+        return settings.textSize || 100;
+      }
+    } catch (error) {
+      console.error('Error loading text size setting:', error);
+    }
+    return 100;
+  });
+
+  const [userProfile, setUserProfile] = useState<UserProfile>(() => {
+    try {
+      const savedSettings = localStorage.getItem('appSettings');
+      if (savedSettings) {
+        const settings = JSON.parse(savedSettings);
+        return settings.userProfile || {
+          name: 'Иван Иванов',
+          email: 'ivan@example.com',
+          avatar: 'https://via.placeholder.com/150',
+        };
+      }
+    } catch (error) {
+      console.error('Error loading user profile:', error);
+    }
+    return {
+      name: 'Иван Иванов',
+      email: 'ivan@example.com',
+      avatar: 'https://via.placeholder.com/150',
+    };
+  });
+
   const [rooms, setRooms] = useState<Room[]>([
     { id: '1', name: 'Гостиная', deviceId: 'light1', isOn: true, brightness: 80, mode: 'auto' },
     { id: '2', name: 'Спальня', deviceId: 'light2', isOn: false, brightness: 60, mode: 'night' },
@@ -100,18 +140,23 @@ const App: React.FC = () => {
     palette: {
       mode: darkMode ? 'dark' : 'light',
       primary: {
-        main: '#2196f3',
+        main: darkMode ? '#9c27b0' : '#2196f3',
       },
       secondary: {
         main: '#f50057',
       },
       background: {
-        default: darkMode ? '#121212' : '#ffffff',
+        default: darkMode ? '#121212' : '#f5f5f5',
         paper: darkMode ? '#1e1e1e' : '#ffffff',
+      },
+      text: {
+        primary: darkMode ? '#ffffff' : '#000000',
+        secondary: darkMode ? '#b0b0b0' : '#666666',
       },
     },
     typography: {
       fontFamily: '"Roboto Flex", "Roboto", "Helvetica", "Arial", sans-serif',
+      fontSize: 16 * (textSize / 100),
       h1: {
         fontFamily: '"Montserrat", "Roboto", "Helvetica", "Arial", sans-serif',
         fontWeight: 700,
@@ -172,42 +217,54 @@ const App: React.FC = () => {
           fontSize: `${0.75 * (textSize / 100)}rem`,
         },
       },
+      button: {
+        fontSize: `${0.875 * (textSize / 100)}rem`,
+        '@media (max-width:600px)': {
+          fontSize: `${0.75 * (textSize / 100)}rem`,
+        },
+      },
     },
     components: {
-      MuiContainer: {
+      MuiCssBaseline: {
+        styleOverrides: (theme) => ({
+          body: {
+            backgroundColor: theme.palette.mode === 'dark' ? '#121212' : '#f5f5f5',
+            color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+            fontSize: `${16 * (textSize / 100)}px`,
+          },
+        }),
+      },
+      MuiPaper: {
         styleOverrides: {
           root: {
-            '@media (max-width:600px)': {
-              padding: '8px',
-            },
+            backgroundImage: 'none',
           },
+        },
+        defaultProps: {
+          elevation: darkMode ? 1 : 0,
         },
       },
       MuiCard: {
         styleOverrides: {
           root: {
-            '@media (max-width:600px)': {
-              borderRadius: '12px',
-            },
-            backgroundColor: darkMode ? '#1e1e1e' : '#ffffff',
-            color: darkMode ? '#ffffff' : 'inherit',
-          },
-        },
-      },
-      MuiPaper: {
-        styleOverrides: {
-          root: {
-            backgroundColor: darkMode ? '#1e1e1e' : '#ffffff',
-            color: darkMode ? '#ffffff' : 'inherit',
+            backgroundImage: 'none',
           },
         },
       },
       MuiSwitch: {
         styleOverrides: {
           root: {
-            '& .MuiSwitch-track': {
-              backgroundColor: darkMode ? '#666666' : '#cccccc',
-            },
+            padding: 8,
+          },
+          track: {
+            opacity: 1,
+          },
+        },
+      },
+      MuiBottomNavigation: {
+        styleOverrides: {
+          root: {
+            borderTop: `1px solid ${darkMode ? '#333333' : '#e0e0e0'}`,
           },
         },
       },
@@ -241,20 +298,6 @@ const App: React.FC = () => {
           window.location.hash = '#/';
         }
 
-        // Загружаем сохраненные настройки
-        const savedSettings = localStorage.getItem('appSettings');
-        if (savedSettings) {
-          try {
-            const settings = JSON.parse(savedSettings);
-            setDarkMode(settings.darkMode || false);
-            setTextSize(settings.textSize || 100);
-            setUserProfile(settings.userProfile || userProfile);
-          } catch (parseError) {
-            console.error('Failed to parse saved settings:', parseError);
-            localStorage.removeItem('appSettings');
-          }
-        }
-
         setIsInitialized(true);
       } catch (err) {
         console.error('Initialization error:', err);
@@ -265,17 +308,17 @@ const App: React.FC = () => {
     initializeApp();
   }, []);
 
-  // Сохраняем настройки при изменении
   useEffect(() => {
     if (isInitialized) {
       try {
-        localStorage.setItem('appSettings', JSON.stringify({
+        const settings = {
           darkMode,
           textSize,
           userProfile,
-        }));
-      } catch (err) {
-        console.error('Failed to save settings:', err);
+        };
+        localStorage.setItem('appSettings', JSON.stringify(settings));
+      } catch (error) {
+        console.error('Error saving settings:', error);
       }
     }
   }, [isInitialized, darkMode, textSize, userProfile]);
@@ -343,9 +386,13 @@ const App: React.FC = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline />
+      <CssBaseline enableColorScheme />
       <Router>
-        <Box sx={{ pb: 7 }}>
+        <Box sx={{ 
+          minHeight: '100vh',
+          bgcolor: 'background.default',
+          color: 'text.primary',
+        }}>
           <Routes>
             <Route 
               path="/" 
