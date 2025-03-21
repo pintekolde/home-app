@@ -9,13 +9,8 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  IconButton,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import Brightness6Icon from '@mui/icons-material/Brightness6';
-import WbSunnyIcon from '@mui/icons-material/WbSunny';
-import NightsStayIcon from '@mui/icons-material/NightsStay';
-import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { Room } from '../types';
 
 const RoomCard = styled(Paper)(({ theme }) => ({
@@ -26,14 +21,6 @@ const RoomCard = styled(Paper)(({ theme }) => ({
     : 'linear-gradient(45deg, #2196f3 30%, #64b5f6 90%)',
   color: '#fff',
   borderRadius: '20px',
-}));
-
-const ModeButton = styled(IconButton)<{ isActive?: boolean }>(({ theme, isActive }) => ({
-  color: isActive ? '#fff' : theme.palette.text.primary,
-  backgroundColor: isActive ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
-  '&:hover': {
-    backgroundColor: isActive ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.04)',
-  },
 }));
 
 interface LightsPageProps {

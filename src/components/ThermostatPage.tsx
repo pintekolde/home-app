@@ -18,22 +18,11 @@ import {
   IconButton,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import ThermostatIcon from '@mui/icons-material/Thermostat';
 import AcUnitIcon from '@mui/icons-material/AcUnit';
 import TimerIcon from '@mui/icons-material/Timer';
 import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import CloseIcon from '@mui/icons-material/Close';
 import { ThermostatRoom, ThermostatSettings } from '../types';
-
-const ThermostatCard = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(2),
-  height: '100%',
-  background: theme.palette.mode === 'dark'
-    ? 'linear-gradient(45deg, #9c27b0 30%, #ba68c8 90%)'
-    : 'linear-gradient(45deg, #2196f3 30%, #64b5f6 90%)',
-  color: '#fff',
-  borderRadius: '20px',
-}));
 
 const FunctionButton = styled(Paper)<{ isActive?: boolean }>(({ theme, isActive }) => ({
   padding: theme.spacing(2),

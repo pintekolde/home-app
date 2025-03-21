@@ -109,90 +109,171 @@
     <div id="root"></div>
     <div id="error-message" class="error-message"></div>
     <script>
-      // Определяем предпочтения пользователя
-      const darkModePreference = window.matchMedia('(prefers-color-scheme: dark)');
-      const storedSettings = localStorage.getItem('appSettings');
-      
-      if (storedSettings) {
-        try {
-          const settings = JSON.parse(storedSettings);
-          // Применяем сохраненные настройки размера текста
-          if (settings.textSize) {
-            document.documentElement.style.fontSize = `${16 * (settings.textSize / 100)}px`;
+      document.addEventListener('DOMContentLoaded', () => {
+        let appSettings = null;
+
+        // Показ сообщения об ошибке
+        function showError(message) {
+          const errorElement = document.getElementById('error-message');
+          if (errorElement) {
+            errorElement.textContent = message;
+            errorElement.classList.add('visible');
+            setTimeout(() => {
+              errorElement.classList.remove('visible');
+            }, 5000);
           }
-          // Применяем сохраненные настройки темы
-          if (settings.darkMode !== undefined) {
-            document.documentElement.classList.toggle('dark-theme', settings.darkMode);
-          }
-        } catch (error) {
-          console.error('Error applying stored settings:', error);
         }
-      }
 
-      function showError(message) {
-        const errorElement = document.getElementById('error-message');
-        errorElement.textContent = message;
-        errorElement.classList.add('visible');
-        setTimeout(() => {
-          errorElement.classList.remove('visible');
-        }, 5000);
-      }
+        // Применение настроек
+        function applySettings(settings) {
+          try {
+            if (!settings) return;
 
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/home-app/service-worker.js', {
-            scope: '/home-app/'
-          })
-            .then(registration => {
-              console.log('ServiceWorker registration successful with scope:', registration.scope);
-              if (registration.active) {
-                console.log('Service Worker is active');
-              }
-              registration.addEventListener('activate', () => {
-                console.log('Service Worker activated');
-              });
-            })
-            .catch(err => {
-              console.error('ServiceWorker registration failed:', err);
-              showError('Failed to register service worker: ' + err.message);
+            // Применяем размер текста
+            if (typeof settings.textSize === 'number') {
+              const fontSize = Math.max(50, Math.min(200, settings.textSize));
+              document.documentElement.style.fontSize = `${16 * (fontSize / 100)}px`;
+            }
+
+            // Применяем тему
+            if (typeof settings.darkMode === 'boolean') {
+              document.documentElement.classList.toggle('dark-theme', settings.darkMode);
+            }
+
+            // Сохраняем настройки
+            localStorage.setItem('appSettings', JSON.stringify(settings));
+          } catch (error) {
+            console.error('Error applying settings:', error);
+            showError('Failed to apply settings');
+          }
+        }
+
+        // Инициализация настроек приложения
+        function initializeAppSettings() {
+          try {
+            const darkModePreference = window.matchMedia('(prefers-color-scheme: dark)');
+            let settings = {
+              darkMode: darkModePreference.matches,
+              textSize: 100
+            };
+
+            const storedSettings = localStorage.getItem('appSettings');
+            if (storedSettings) {
+              const parsed = JSON.parse(storedSettings);
+              settings = {
+                ...settings,
+                darkMode: typeof parsed.darkMode === 'boolean' ? parsed.darkMode : settings.darkMode,
+                textSize: typeof parsed.textSize === 'number' ? parsed.textSize : settings.textSize
+              };
+            }
+
+            appSettings = settings;
+            applySettings(settings);
+            return settings;
+          } catch (error) {
+            console.error('Error initializing settings:', error);
+            showError('Failed to initialize settings');
+            return null;
+          }
+        }
+
+        // Регистрация Service Worker
+        async function registerServiceWorker() {
+          if (!('serviceWorker' in navigator)) {
+            console.log('Service workers are not supported');
+            return;
+          }
+
+          try {
+            const registration = await navigator.serviceWorker.register('/home-app/service-worker.js', {
+              scope: '/home-app/'
             });
-        });
-      } else {
-        console.log('Service workers are not supported');
-        showError('Service workers are not supported in your browser');
-      }
 
-      // Обработка онлайн/офлайн состояния
-      window.addEventListener('online', function() {
-        document.body.classList.remove('offline');
-        console.log('App is online');
-      });
-      window.addEventListener('offline', function() {
-        document.body.classList.add('offline');
-        console.log('App is offline');
-        showError('You are offline. Some features may be limited.');
-      });
+            console.log('ServiceWorker registration successful');
+            
+            registration.addEventListener('activate', () => {
+              console.log('Service Worker activated');
+            });
 
-      // Глобальная обработка ошибок
-      window.addEventListener('error', function(e) {
-        console.error('Global error:', e.error);
-        showError('An error occurred. Please try again.');
-      });
-      window.addEventListener('unhandledrejection', function(e) {
-        console.error('Unhandled promise rejection:', e.reason);
-        showError('An error occurred. Please try again.');
-      });
-
-      // Предотвращение масштабирования двойным тапом на iOS
-      document.addEventListener('touchend', function(event) {
-        const now = Date.now();
-        const timeDiff = now - (this.lastTouch || now);
-        this.lastTouch = now;
-
-        if (timeDiff < 500 && timeDiff > 0) {
-          event.preventDefault();
+            registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+              if (newWorker) {
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    showError('New version available. Please refresh the page.');
+                  }
+                });
+              }
+            });
+          } catch (error) {
+            console.error('ServiceWorker registration failed:', error);
+            showError('Failed to register service worker');
+          }
         }
-      }, false);
+
+        // Обработка онлайн/офлайн состояния
+        function setupNetworkHandlers() {
+          window.addEventListener('online', () => {
+            document.body.classList.remove('offline');
+            console.log('App is online');
+          });
+
+          window.addEventListener('offline', () => {
+            document.body.classList.add('offline');
+            console.log('App is offline');
+            showError('You are offline. Some features may be limited.');
+          });
+        }
+
+        // Обработка ошибок
+        function setupErrorHandlers() {
+          window.addEventListener('error', (event) => {
+            if (event && event.error) {
+              console.error('Global error:', event.error);
+              showError('An error occurred. Please try again.');
+            }
+          });
+
+          window.addEventListener('unhandledrejection', (event) => {
+            if (event && event.reason) {
+              console.error('Unhandled promise rejection:', event.reason);
+              showError('An error occurred. Please try again.');
+            }
+          });
+        }
+
+        // Предотвращение масштабирования двойным тапом на iOS
+        function preventDoubleTapZoom() {
+          let lastTouchEnd = 0;
+          document.addEventListener('touchend', (event) => {
+            const now = Date.now();
+            if (now - lastTouchEnd < 300) {
+              event.preventDefault();
+            }
+            lastTouchEnd = now;
+          }, { passive: false });
+        }
+
+        // Инициализация приложения
+        async function initializeApp() {
+          try {
+            initializeAppSettings();
+            await registerServiceWorker();
+            setupNetworkHandlers();
+            setupErrorHandlers();
+            preventDoubleTapZoom();
+          } catch (error) {
+            console.error('Error during app initialization:', error);
+            showError('Failed to initialize application');
+          }
+        }
+
+        // Запуск инициализации после загрузки DOM
+        initializeApp().catch(error => {
+          console.error('Fatal error during initialization:', error);
+          showError('Fatal error during initialization');
+        });
+      });
     </script>
   </body>
 </html> 

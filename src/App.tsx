@@ -1,18 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { HashRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Switch from '@mui/material/Switch';
-import LightbulbIcon from '@mui/icons-material/Lightbulb';
-import ThermostatIcon from '@mui/icons-material/Thermostat';
-import SecurityIcon from '@mui/icons-material/Security';
-import { styled } from '@mui/material/styles';
 
 import BottomNavigation from './components/BottomNavigation';
 import Dashboard from './components/Dashboard';
@@ -20,44 +11,7 @@ import LightsPage from './components/LightsPage';
 import ThermostatPage from './components/ThermostatPage';
 import SecurityPage from './components/SecurityPage';
 import SettingsPage from './components/SettingsPage';
-import { Room, DeviceInfo, UserProfile, Devices, Camera, ThermostatSettings } from './types';
-
-const StyledCard = styled(Card)(({ theme }) => ({
-  height: '100%',
-  display: 'flex',
-  flexDirection: 'column',
-  backgroundColor: theme.palette.background.paper,
-  transition: 'transform 0.2s',
-  '&:hover': {
-    transform: 'scale(1.02)',
-  },
-  '@media (max-width:600px)': {
-    '&:hover': {
-      transform: 'none',
-    },
-  },
-}));
-
-interface DeviceCardProps {
-  title: string;
-  icon: React.ReactNode;
-  isOn: boolean;
-  onToggle: () => void;
-}
-
-const DeviceCard: React.FC<DeviceCardProps> = ({ title, icon, isOn, onToggle }) => (
-  <StyledCard>
-    <CardContent>
-      <Box display="flex" alignItems="center" justifyContent="space-between">
-        <Box display="flex" alignItems="center" gap={1}>
-          {icon}
-          <Typography variant="h6">{title}</Typography>
-        </Box>
-        <Switch checked={isOn} onChange={onToggle} />
-      </Box>
-    </CardContent>
-  </StyledCard>
-);
+import { Room, UserProfile, ThermostatSettings } from './types';
 
 const App: React.FC = () => {
   const [isInitialized, setIsInitialized] = useState(false);
@@ -130,7 +84,7 @@ const App: React.FC = () => {
     router: true,
   });
 
-  const [stats, setStats] = useState({
+  const [stats] = useState({
     activeDevices: 3,
     totalDevices: 5,
     energyUsage: 75,
