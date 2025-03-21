@@ -17,12 +17,23 @@ const StatusCard = styled(Paper)<{ isActive?: boolean }>(({ theme, isActive }) =
     ? theme.palette.mode === 'dark'
       ? 'linear-gradient(45deg, #9c27b0 30%, #ba68c8 90%)'
       : 'linear-gradient(45deg, #2196f3 30%, #64b5f6 90%)'
-    : 'transparent',
+    : theme.palette.mode === 'dark'
+      ? '#1e1e1e'
+      : '#ffffff',
   color: isActive ? '#fff' : theme.palette.text.primary,
   border: isActive ? 'none' : `1px solid ${theme.palette.divider}`,
   transition: 'all 0.3s ease',
   '&:hover': {
     transform: 'scale(1.02)',
+    backgroundColor: theme.palette.mode === 'dark'
+      ? '#2c2c2c'
+      : '#f5f5f5',
+  },
+  '@media (max-width:600px)': {
+    padding: theme.spacing(1.5),
+    '&:hover': {
+      transform: 'none',
+    },
   },
 }));
 
@@ -34,6 +45,11 @@ const ThermostatCard = styled(Paper)(({ theme }) => ({
     ? 'linear-gradient(45deg, #9c27b0 30%, #ba68c8 90%)'
     : 'linear-gradient(45deg, #2196f3 30%, #64b5f6 90%)',
   color: '#fff',
+  '@media (max-width:600px)': {
+    padding: theme.spacing(1.5),
+    marginTop: theme.spacing(1.5),
+    borderRadius: '16px',
+  },
 }));
 
 interface DashboardProps {
@@ -67,70 +83,82 @@ const Dashboard: React.FC<DashboardProps> = ({
   const totalRooms = rooms.length;
 
   return (
-    <Box sx={{ pb: 7 }}>
-      <Box sx={{ p: 2 }}>
+    <Box sx={{ pb: { xs: 8, sm: 7 } }}>
+      <Box sx={{ p: { xs: 1.5, sm: 2 } }}>
         <Typography variant="h4" component="h1" gutterBottom>
           Home APP
         </Typography>
       </Box>
       
-      <Grid container spacing={2}>
-        <Grid item xs={6}>
+      <Grid container spacing={{ xs: 1.5, sm: 2 }}>
+        <Grid item xs={12} sm={6}>
           <StatusCard isActive={devices.lights}>
             <Box display="flex" alignItems="center" justifyContent="space-between">
               <Box display="flex" alignItems="center" gap={1}>
-                <LightbulbIcon />
-                <Typography variant="h6">Освещение</Typography>
+                <LightbulbIcon sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }} />
+                <Typography variant="h6" sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
+                  Освещение
+                </Typography>
               </Box>
               <Switch
                 checked={devices.lights}
                 onChange={() => onToggleDevice('lights')}
                 color="primary"
+                size="small"
               />
             </Box>
           </StatusCard>
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={12} sm={6}>
           <StatusCard isActive={devices.security}>
             <Box display="flex" alignItems="center" justifyContent="space-between">
               <Box display="flex" alignItems="center" gap={1}>
-                <SecurityIcon />
-                <Typography variant="h6">Безопасность</Typography>
+                <SecurityIcon sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }} />
+                <Typography variant="h6" sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
+                  Безопасность
+                </Typography>
               </Box>
               <Switch
                 checked={devices.security}
                 onChange={() => onToggleDevice('security')}
                 color="primary"
+                size="small"
               />
             </Box>
           </StatusCard>
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={12} sm={6}>
           <StatusCard isActive={devices.ac}>
             <Box display="flex" alignItems="center" justifyContent="space-between">
               <Box display="flex" alignItems="center" gap={1}>
-                <AcUnitIcon />
-                <Typography variant="h6">Кондиционер</Typography>
+                <AcUnitIcon sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }} />
+                <Typography variant="h6" sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
+                  Кондиционер
+                </Typography>
               </Box>
               <Switch
                 checked={devices.ac}
                 onChange={() => onToggleDevice('ac')}
                 color="primary"
+                size="small"
               />
             </Box>
           </StatusCard>
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={12} sm={6}>
           <StatusCard isActive={devices.router}>
             <Box display="flex" alignItems="center" justifyContent="space-between">
               <Box display="flex" alignItems="center" gap={1}>
-                <WifiIcon />
-                <Typography variant="h6">Роутер</Typography>
+                <WifiIcon sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }} />
+                <Typography variant="h6" sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
+                  Роутер
+                </Typography>
               </Box>
               <Switch
                 checked={devices.router}
                 onChange={() => onToggleDevice('router')}
                 color="primary"
+                size="small"
               />
             </Box>
           </StatusCard>
@@ -140,17 +168,20 @@ const Dashboard: React.FC<DashboardProps> = ({
       <ThermostatCard>
         <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
           <Box display="flex" alignItems="center" gap={1}>
-            <ThermostatIcon />
-            <Typography variant="h6">Термостат</Typography>
+            <ThermostatIcon sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }} />
+            <Typography variant="h6" sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
+              Термостат
+            </Typography>
           </Box>
           <Switch
             checked={devices.thermostat}
             onChange={() => onToggleDevice('thermostat')}
             color="primary"
+            size="small"
           />
         </Box>
-        <Box sx={{ px: 2 }}>
-          <Typography variant="h3" align="center" gutterBottom>
+        <Box sx={{ px: { xs: 1, sm: 2 } }}>
+          <Typography variant="h3" align="center" gutterBottom sx={{ fontSize: { xs: '2rem', sm: '3rem' } }}>
             {temperature}°C
           </Typography>
           <Slider
@@ -163,8 +194,8 @@ const Dashboard: React.FC<DashboardProps> = ({
             valueLabelFormat={(value) => `${value}°C`}
             sx={{
               '& .MuiSlider-thumb': {
-                height: 24,
-                width: 24,
+                height: { xs: 20, sm: 24 },
+                width: { xs: 20, sm: 24 },
                 backgroundColor: '#fff',
                 border: '2px solid currentColor',
                 '&:focus, &:hover, &.Mui-active, &.Mui-focusVisible': {
@@ -175,7 +206,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                 },
               },
               '& .MuiSlider-track': {
-                height: 8,
+                height: { xs: 6, sm: 8 },
                 borderRadius: 4,
               },
             }}
@@ -183,8 +214,8 @@ const Dashboard: React.FC<DashboardProps> = ({
         </Box>
       </ThermostatCard>
 
-      <Paper sx={{ p: 2, mb: 2 }}>
-        <Typography variant="h6" gutterBottom>
+      <Paper sx={{ p: { xs: 1.5, sm: 2 }, mb: { xs: 1.5, sm: 2 }, mt: { xs: 1.5, sm: 2 } }}>
+        <Typography variant="h6" gutterBottom sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
           Активные устройства
         </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
@@ -192,10 +223,10 @@ const Dashboard: React.FC<DashboardProps> = ({
             <LinearProgress
               variant="determinate"
               value={(activeRooms / totalRooms) * 100}
-              sx={{ height: 10, borderRadius: 5 }}
+              sx={{ height: { xs: 8, sm: 10 }, borderRadius: 5 }}
             />
           </Box>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
             {activeRooms}/{totalRooms}
           </Typography>
         </Box>

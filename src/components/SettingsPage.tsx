@@ -2,24 +2,38 @@ import React from 'react';
 import {
   Box,
   Typography,
-  Paper,
   Switch,
   Slider,
-  List,
-  ListItem,
-  ListItemText,
+  Paper,
   Avatar,
   TextField,
+  FormControlLabel,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { UserProfile } from '../types';
+
+const SettingsContainer = styled(Box)(({ theme }) => ({
+  padding: theme.spacing(2),
+  '@media (max-width:600px)': {
+    padding: theme.spacing(1.5),
+  },
+}));
+
+const SettingsSection = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(2),
+  marginBottom: theme.spacing(2),
+  '@media (max-width:600px)': {
+    padding: theme.spacing(1.5),
+  },
+}));
 
 interface SettingsPageProps {
   userProfile: UserProfile;
   onProfileChange: (profile: UserProfile) => void;
   darkMode: boolean;
-  onDarkModeChange: (darkMode: boolean) => void;
+  onDarkModeChange: (checked: boolean) => void;
   textSize: number;
-  onTextSizeChange: (size: number) => void;
+  onTextSizeChange: (value: number) => void;
 }
 
 const SettingsPage: React.FC<SettingsPageProps> = ({
@@ -30,71 +44,87 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
   textSize,
   onTextSizeChange,
 }) => {
+  const handleTextSizeChange = (_: Event, value: number | number[]) => {
+    onTextSizeChange(value as number);
+  };
+
   return (
-    <Box sx={{ pb: 7 }}>
-      <Paper sx={{ p: 2, mb: 2 }}>
-        <Box display="flex" alignItems="center" gap={2} mb={2}>
+    <SettingsContainer>
+      <Typography variant="h4" component="h1" gutterBottom>
+        Настройки
+      </Typography>
+
+      <SettingsSection>
+        <Typography variant="h6" gutterBottom>
+          Профиль
+        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
           <Avatar
             src={userProfile.avatar}
             alt={userProfile.name}
-            sx={{ width: 64, height: 64 }}
+            sx={{ width: 64, height: 64, mr: 2 }}
           />
-          <Box>
+          <Box sx={{ flexGrow: 1 }}>
             <TextField
+              fullWidth
               label="Имя"
               value={userProfile.name}
               onChange={(e) => onProfileChange({ ...userProfile, name: e.target.value })}
-              fullWidth
-              size="small"
+              margin="dense"
             />
             <TextField
+              fullWidth
               label="Email"
               value={userProfile.email}
               onChange={(e) => onProfileChange({ ...userProfile, email: e.target.value })}
-              fullWidth
-              size="small"
-              sx={{ mt: 1 }}
+              margin="dense"
             />
           </Box>
         </Box>
-      </Paper>
+      </SettingsSection>
 
-      <Paper sx={{ p: 2, mb: 2 }}>
+      <SettingsSection>
         <Typography variant="h6" gutterBottom>
-          Доступность
+          Внешний вид
         </Typography>
-        <List>
-          <ListItem>
-            <ListItemText
-              primary="Увеличенный текст"
-              secondary="Увеличить размер текста для удобства чтения"
-            />
-            <Box sx={{ width: 200 }}>
-              <Slider
-                value={textSize}
-                onChange={(_, value) => onTextSizeChange(value as number)}
-                min={80}
-                max={200}
-                step={10}
-                valueLabelDisplay="auto"
-                valueLabelFormat={(value) => `${value}%`}
-              />
-            </Box>
-          </ListItem>
-          <ListItem>
-            <ListItemText
-              primary="Темная тема"
-              secondary="Включить темную тему для комфортного использования в темноте"
-            />
+        <FormControlLabel
+          control={
             <Switch
               checked={darkMode}
               onChange={(e) => onDarkModeChange(e.target.checked)}
               color="primary"
             />
-          </ListItem>
-        </List>
-      </Paper>
-    </Box>
+          }
+          label="Темная тема"
+        />
+        <Box sx={{ mt: 2 }}>
+          <Typography gutterBottom>Размер текста ({textSize}%)</Typography>
+          <Slider
+            value={textSize}
+            onChange={handleTextSizeChange}
+            min={75}
+            max={150}
+            step={5}
+            marks={[
+              { value: 75, label: '75%' },
+              { value: 100, label: '100%' },
+              { value: 150, label: '150%' },
+            ]}
+            valueLabelDisplay="auto"
+            sx={{
+              '& .MuiSlider-thumb': {
+                height: 20,
+                width: 20,
+              },
+              '& .MuiSlider-track': {
+                height: 6,
+                borderRadius: 3,
+              },
+            }}
+          />
+        </Box>
+      </SettingsSection>
+    </SettingsContainer>
   );
 };
 

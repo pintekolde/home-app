@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { HashRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -22,45 +22,6 @@ import SecurityPage from './components/SecurityPage';
 import SettingsPage from './components/SettingsPage';
 import { Room, DeviceInfo, UserProfile, Devices, Camera, ThermostatSettings } from './types';
 
-const theme = createTheme({
-  palette: {
-    mode: 'light',
-    primary: {
-      main: '#2196f3',
-    },
-    secondary: {
-      main: '#f50057',
-    },
-  },
-  typography: {
-    fontFamily: '"Roboto Flex", "Roboto", "Helvetica", "Arial", sans-serif',
-    h1: {
-      fontFamily: '"Montserrat", "Roboto", "Helvetica", "Arial", sans-serif',
-      fontWeight: 700,
-    },
-    h2: {
-      fontFamily: '"Montserrat", "Roboto", "Helvetica", "Arial", sans-serif',
-      fontWeight: 700,
-    },
-    h3: {
-      fontFamily: '"Montserrat", "Roboto", "Helvetica", "Arial", sans-serif',
-      fontWeight: 700,
-    },
-    h4: {
-      fontFamily: '"Montserrat", "Roboto", "Helvetica", "Arial", sans-serif',
-      fontWeight: 700,
-    },
-    h5: {
-      fontFamily: '"Montserrat", "Roboto", "Helvetica", "Arial", sans-serif',
-      fontWeight: 700,
-    },
-    h6: {
-      fontFamily: '"Montserrat", "Roboto", "Helvetica", "Arial", sans-serif',
-      fontWeight: 700,
-    },
-  },
-});
-
 const StyledCard = styled(Card)(({ theme }) => ({
   height: '100%',
   display: 'flex',
@@ -69,6 +30,11 @@ const StyledCard = styled(Card)(({ theme }) => ({
   transition: 'transform 0.2s',
   '&:hover': {
     transform: 'scale(1.02)',
+  },
+  '@media (max-width:600px)': {
+    '&:hover': {
+      transform: 'none',
+    },
   },
 }));
 
@@ -129,6 +95,124 @@ const App: React.FC = () => {
     totalDevices: 5,
     energyUsage: 75,
   });
+
+  const theme = useMemo(() => createTheme({
+    palette: {
+      mode: darkMode ? 'dark' : 'light',
+      primary: {
+        main: '#2196f3',
+      },
+      secondary: {
+        main: '#f50057',
+      },
+      background: {
+        default: darkMode ? '#121212' : '#ffffff',
+        paper: darkMode ? '#1e1e1e' : '#ffffff',
+      },
+    },
+    typography: {
+      fontFamily: '"Roboto Flex", "Roboto", "Helvetica", "Arial", sans-serif',
+      h1: {
+        fontFamily: '"Montserrat", "Roboto", "Helvetica", "Arial", sans-serif',
+        fontWeight: 700,
+        fontSize: `${2 * (textSize / 100)}rem`,
+        '@media (max-width:600px)': {
+          fontSize: `${1.5 * (textSize / 100)}rem`,
+        },
+      },
+      h2: {
+        fontFamily: '"Montserrat", "Roboto", "Helvetica", "Arial", sans-serif',
+        fontWeight: 700,
+        fontSize: `${1.75 * (textSize / 100)}rem`,
+        '@media (max-width:600px)': {
+          fontSize: `${1.25 * (textSize / 100)}rem`,
+        },
+      },
+      h3: {
+        fontFamily: '"Montserrat", "Roboto", "Helvetica", "Arial", sans-serif',
+        fontWeight: 700,
+        fontSize: `${1.5 * (textSize / 100)}rem`,
+        '@media (max-width:600px)': {
+          fontSize: `${1.1 * (textSize / 100)}rem`,
+        },
+      },
+      h4: {
+        fontFamily: '"Montserrat", "Roboto", "Helvetica", "Arial", sans-serif',
+        fontWeight: 700,
+        fontSize: `${1.25 * (textSize / 100)}rem`,
+        '@media (max-width:600px)': {
+          fontSize: `${1 * (textSize / 100)}rem`,
+        },
+      },
+      h5: {
+        fontFamily: '"Montserrat", "Roboto", "Helvetica", "Arial", sans-serif',
+        fontWeight: 700,
+        fontSize: `${1.1 * (textSize / 100)}rem`,
+        '@media (max-width:600px)': {
+          fontSize: `${0.9 * (textSize / 100)}rem`,
+        },
+      },
+      h6: {
+        fontFamily: '"Montserrat", "Roboto", "Helvetica", "Arial", sans-serif',
+        fontWeight: 700,
+        fontSize: `${1 * (textSize / 100)}rem`,
+        '@media (max-width:600px)': {
+          fontSize: `${0.875 * (textSize / 100)}rem`,
+        },
+      },
+      body1: {
+        fontSize: `${1 * (textSize / 100)}rem`,
+        '@media (max-width:600px)': {
+          fontSize: `${0.875 * (textSize / 100)}rem`,
+        },
+      },
+      body2: {
+        fontSize: `${0.875 * (textSize / 100)}rem`,
+        '@media (max-width:600px)': {
+          fontSize: `${0.75 * (textSize / 100)}rem`,
+        },
+      },
+    },
+    components: {
+      MuiContainer: {
+        styleOverrides: {
+          root: {
+            '@media (max-width:600px)': {
+              padding: '8px',
+            },
+          },
+        },
+      },
+      MuiCard: {
+        styleOverrides: {
+          root: {
+            '@media (max-width:600px)': {
+              borderRadius: '12px',
+            },
+            backgroundColor: darkMode ? '#1e1e1e' : '#ffffff',
+            color: darkMode ? '#ffffff' : 'inherit',
+          },
+        },
+      },
+      MuiPaper: {
+        styleOverrides: {
+          root: {
+            backgroundColor: darkMode ? '#1e1e1e' : '#ffffff',
+            color: darkMode ? '#ffffff' : 'inherit',
+          },
+        },
+      },
+      MuiSwitch: {
+        styleOverrides: {
+          root: {
+            '& .MuiSwitch-track': {
+              backgroundColor: darkMode ? '#666666' : '#cccccc',
+            },
+          },
+        },
+      },
+    },
+  }), [darkMode, textSize]);
 
   useEffect(() => {
     const initializeApp = async () => {
