@@ -5,9 +5,9 @@ const urlsToCache = [
   '/home-app/static/js/main.d5a254ca.js',
   '/home-app/static/css/main.css',
   '/home-app/manifest.json',
-  '/home-app/logo192.png',
-  '/home-app/logo512.png',
-  '/home-app/favicon.ico',
+  '/home-app/images/logo192.png',
+  '/home-app/images/logo512.png',
+  '/home-app/images/favicon.ico',
   '/home-app/static/js/main.d5a254ca.js.map',
   '/home-app/static/js/main.d5a254ca.js.LICENSE.txt'
 ];
