@@ -1,6 +1,8 @@
 {
-  "short_name": "Home APP",
-  "name": "Smart Home Control Application",
+  "short_name": "Home App",
+  "name": "Smart Home Control App",
+  "id": "home-app-1",
+  "description": "Application for controlling smart home devices",
   "icons": [
     {
       "src": "/home-app/images/favicon.ico",
@@ -9,24 +11,21 @@
     },
     {
       "src": "/home-app/images/logo192.png",
-      "type": "image/png",
       "sizes": "192x192",
-      "purpose": "any maskable"
+      "type": "image/png"
     },
     {
       "src": "/home-app/images/logo512.png",
-      "type": "image/png",
       "sizes": "512x512",
-      "purpose": "any maskable"
+      "type": "image/png"
     }
   ],
   "start_url": "/home-app/",
   "display": "standalone",
-  "theme_color": "#2196f3",
+  "theme_color": "#000000",
   "background_color": "#ffffff",
   "orientation": "portrait",
   "scope": "/home-app/",
-  "description": "Smart home control application for managing your devices",
   "lang": "en",
   "categories": ["utilities", "lifestyle"],
   "screenshots": [
@@ -37,5 +36,8 @@
       "platform": "wide",
       "label": "Home Screen"
     }
-  ]
+  ],
+  "launch_handler": {
+    "client_mode": ["focus-existing", "auto"]
+  }
 } 
