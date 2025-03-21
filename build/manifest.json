@@ -1,6 +1,16 @@
 {
-  "short_name": "Home APP",
-  "name": "Smart Home Control Application",
+  "name": "Home App",
+  "short_name": "Home",
+  "id": "home-app",
+  "description": "Smart home control application for managing lights, temperature, and security systems",
+  "start_url": "/home-app",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#2196f3",
+  "background_color": "#ffffff",
+  "dir": "ltr",
+  "lang": "en",
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "favicon.ico",
@@ -20,14 +30,6 @@
       "purpose": "any maskable"
     }
   ],
-  "start_url": "/home-app",
-  "display": "standalone",
-  "theme_color": "#2196f3",
-  "background_color": "#ffffff",
-  "orientation": "portrait",
-  "scope": "/home-app",
-  "description": "Smart home control application for managing your devices",
-  "lang": "en",
   "categories": ["utilities", "lifestyle"],
   "screenshots": [
     {
