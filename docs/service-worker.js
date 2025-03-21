@@ -3,13 +3,10 @@ const urlsToCache = [
   '/home-app/',
   '/home-app/index.html',
   '/home-app/static/js/main.d5a254ca.js',
-  '/home-app/static/css/main.css',
   '/home-app/manifest.json',
   '/home-app/images/logo192.png',
   '/home-app/images/logo512.png',
-  '/home-app/images/favicon.ico',
-  '/home-app/static/js/main.d5a254ca.js.map',
-  '/home-app/static/js/main.d5a254ca.js.LICENSE.txt'
+  '/home-app/images/favicon.ico'
 ];
 
 self.addEventListener('install', event => {
