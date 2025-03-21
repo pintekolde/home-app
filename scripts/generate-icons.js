@@ -2,26 +2,18 @@ const sharp = require('sharp');
 const fs = require('fs');
 const path = require('path');
 
-const sizes = [192, 512];
-const inputSvg = path.join(__dirname, '../docs/images/logo192.svg');
-const outputDir = path.join(__dirname, '../docs/images');
+const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+const sourceIcon = path.join(__dirname, '../public/icons/icon-512x512.png');
+const targetDir = path.join(__dirname, '../public/icons');
 
 async function generateIcons() {
-  const svgBuffer = fs.readFileSync(inputSvg);
-  
-  for (const size of sizes) {
-    await sharp(svgBuffer)
-      .resize(size, size)
-      .png()
-      .toFile(path.join(outputDir, `logo${size}.png`));
-    console.log(`Generated logo${size}.png`);
-  }
-
-  // Generate favicon.ico
-  await sharp(svgBuffer)
-    .resize(32, 32)
-    .toFile(path.join(outputDir, 'favicon.ico'));
-  console.log('Generated favicon.ico');
+    for (const size of sizes) {
+        const targetPath = path.join(targetDir, `icon-${size}x${size}.png`);
+        await sharp(sourceIcon)
+            .resize(size, size)
+            .toFile(targetPath);
+        console.log(`Generated ${size}x${size} icon`);
+    }
 }
 
 generateIcons().catch(console.error); 
