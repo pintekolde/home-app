@@ -1,0 +1,10 @@
+{
+  "files": {
+    "main.js": "/home-app/static/js/main.d5a254ca.js",
+    "index.html": "/home-app/index.html",
+    "main.d5a254ca.js.map": "/home-app/static/js/main.d5a254ca.js.map"
+  },
+  "entrypoints": [
+    "static/js/main.d5a254ca.js"
+  ]
+}
