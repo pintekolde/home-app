@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate Icons</title>
+</head>
+<body>
+    <canvas id="iconCanvas" width="512" height="512"></canvas>
+    <script>
+        const canvas = document.getElementById('iconCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Set background
+        ctx.fillStyle = '#2196f3';
+        ctx.fillRect(0, 0, 512, 512);
+
+        // Draw home icon
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.moveTo(256, 100);
+        ctx.lineTo(100, 250);
+        ctx.lineTo(150, 250);
+        ctx.lineTo(150, 400);
+        ctx.lineTo(362, 400);
+        ctx.lineTo(362, 250);
+        ctx.lineTo(412, 250);
+        ctx.closePath();
+        ctx.fill();
+
+        // Save as PNG
+        const link = document.createElement('a');
+        link.download = 'icon-512x512.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    </script>
+</body>
+</html> 
