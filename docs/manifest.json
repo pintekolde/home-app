@@ -3,29 +3,29 @@
   "name": "Smart Home Control Application",
   "icons": [
     {
-      "src": "favicon.ico",
+      "src": "images/favicon.ico",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.png",
+      "src": "images/logo192.png",
       "type": "image/png",
       "sizes": "192x192",
       "purpose": "any maskable"
     },
     {
-      "src": "logo512.png",
+      "src": "images/logo512.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"
     }
   ],
-  "start_url": "/home-app",
+  "start_url": ".",
   "display": "standalone",
   "theme_color": "#2196f3",
   "background_color": "#ffffff",
   "orientation": "portrait",
-  "scope": "/home-app",
+  "scope": ".",
   "description": "Smart home control application for managing your devices",
   "lang": "en",
   "categories": ["utilities", "lifestyle"],
